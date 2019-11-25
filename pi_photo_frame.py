@@ -3,6 +3,8 @@ from google_photos import refresh_db, download
 import random
 import os
 import shutil
+from dateutil.parser import parse as dtparse
+import datetime
 
 num_pics = 50
 
@@ -23,11 +25,22 @@ def display_display():
     os.system('feh -FzZx -B black -D 2 var/')
 
 def main():
+    one_month_ago = datetime.date.today() - datetime.timedelta(days=30)
     pics = refresh_db()
     clear_display()
-    for i in range(num_pics):
+    included = set()
+    for key,item in pics.items():
+        when = dtparse(item['mediaMetadata']['creationTime'])
+        if when.date() >= one_month_ago:
+            included.add(key)
+            add_to_display(item)
+    added = 0
+    while added < num_pics:
         random_key = random.choice(list(pics.keys()))
+        if random_key in included:
+            continue
         add_to_display(pics[random_key])
+        added = added + 1
     display_display()
 
 
