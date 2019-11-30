@@ -36,7 +36,9 @@ def load_db():
     return db
 
 
-def refresh_db():
+def refresh_db(progress_cb=None):
+    print_it = lambda num_pics: print('Processed {} pics    '.format(num_pics), end='\r')
+    progress_cb = progress_cb or print_it
     SCOPES = 'https://www.googleapis.com/auth/photoslibrary.readonly'
     store = file.Storage('credentials.json')
     creds = store.get()
@@ -69,7 +71,8 @@ def refresh_db():
                     continue
                 num_pics = num_pics + 1
                 if num_pics % 100 == 0:
-                    print('Processed {} pics    '.format(num_pics), end='\r')
+                    progress_cb(num_pics)
+
                 new_pics[pic['id']] = pic
 
         if 'nextPageToken' not in results:
