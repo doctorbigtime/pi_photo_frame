@@ -48,9 +48,12 @@ def refresh_db(progress_cb=None):
     service = build('photoslibrary', 'v1', http=creds.authorize(Http()))
     #pics = load_db()
     pics = {}
+    with open('secrets.json', 'r') as f:
+        secrets = json.load(f)
+    albumId = secrets['pi_photo_frame']['albumId']
 
     search_request = {'pageSize':100,
-        'albumId':'AASYawUd1Nq8pgn2hwaO3rPyEIx1N0yazFSCrbSJrbzT6YVsspGJrW8YpW_OiXSa73nPk8azEldL',
+        'albumId': albumId,
     }
     results = service.mediaItems().search(body=search_request).execute()
     num_pics = 0
@@ -70,8 +73,7 @@ def refresh_db(progress_cb=None):
                 if not 'image' in pic['mimeType']:
                     continue
                 num_pics = num_pics + 1
-                if num_pics % 100 == 0:
-                    progress_cb(num_pics)
+                progress_cb(num_pics)
 
                 new_pics[pic['id']] = pic
 
