@@ -48,6 +48,8 @@ def update_progress(current_count):
 def add_to_display(pic):
     pic_id = pic['id']
     basename = '{}.jpg'.format(pic_id)
+    if not os.path.exists('cache'):
+        os.makedirs('cache/')
     cache_path = os.path.join('cache', basename)
     if not os.path.exists(cache_path):
         download(pic, cache_path)
